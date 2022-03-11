@@ -1,7 +1,6 @@
 import mariadb as db
 import dbinteractions as dbi
 
-
 def get_all_comments():
     success = False
     comments = []
