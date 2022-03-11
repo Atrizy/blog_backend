@@ -49,6 +49,7 @@ def patch_user_info(login_token, email, username, bio, dob, pfp, profile_banner)
     conn, cursor = dbi.connect_db()
     ## This is needed to make sure you are actually the owner of the account
     cursor.execute("SELECT user_id FROM user_session WHERE login_token=?", [login_token])
+    ## Fetching the users information
     user = cursor.fetchone()
     try:
         ## These 6 cursor.execute statements are updating the information on the backend through the db and taking in input from the frontend through the user to update their profile

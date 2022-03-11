@@ -74,7 +74,7 @@ def delete_user(login_token):
         cursor.execute("SELECT user_id FROM user_session WHERE login_token=?", [login_token])
         ## This acutally fetches everything from your login token
         user = cursor.fetchone()
-        ## This will delete your user from the db
+        ## This will delete your user from the db if the user_id matches up
         cursor.execute("DELETE FROM users WHERE id=?", [user[0]] )
         conn.commit()
         if(cursor.rowcount == 1):

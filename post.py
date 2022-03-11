@@ -10,6 +10,7 @@ def insert_post(login_token, content):
     try:
         ## Getting the login token to figure out which user is trying to make a post 
         cursor.execute("SELECT user_id FROM user_session WHERE login_token=?", [login_token])
+        ## Fetching the users information
         user = cursor.fetchone()
         ## Depending on what the user is inputting this INSERT statement will insert the users id and the content that is provided on the front end 
         cursor.execute("INSERT INTO blog_post(user_id, content) VALUES(?,?)", [user[0], content])
@@ -77,10 +78,10 @@ def delete_blog_post(login_token, id):
     ## Connecting to the db
     conn, cursor = dbi.connect_db()
     try:
-         ## This is grabbing your login token to make sure that you the owner of the blog post before the function can actually delete the posting
+        ## This is grabbing your login token to make sure that you the owner of the blog post before the function can actually delete the posting
         cursor.execute("SELECT user_id FROM user_session WHERE login_token=?", [login_token])
         user = cursor.fetchone()
-        ## This is deleting the post from the db
+        ## This is deleting the post from the db if the user_id matches up
         cursor.execute("DELETE FROM blog_post WHERE id=? AND user_id=?", [id, user[0]] )
         conn.commit()
         if(cursor.rowcount == 1):
