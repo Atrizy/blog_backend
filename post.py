@@ -80,6 +80,7 @@ def delete_blog_post(login_token, id):
     try:
         ## This is grabbing your login token to make sure that you the owner of the blog post before the function can actually delete the posting
         cursor.execute("SELECT user_id FROM user_session WHERE login_token=?", [login_token])
+        ## This fetchone statement is getting the everything about the user
         user = cursor.fetchone()
         ## This is deleting the post from the db if the user_id matches up
         cursor.execute("DELETE FROM blog_post WHERE id=? AND user_id=?", [id, user[0]] )

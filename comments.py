@@ -33,6 +33,7 @@ def insert_comment(login_token, content):
     try:
         ## Getting the login token to figure out which user is trying to make a comment
         cursor.execute("SELECT user_id FROM user_session WHERE login_token=?", [login_token])
+        ## This fetchone statement is getting the everything about the user
         user = cursor.fetchone()
         ## Depending on what the user is inputting this INSERT statement will insert the users id and the content that is provided on the front end 
         cursor.execute("INSERT INTO comment(user_id, content) VALUES(?,?)", [user[0], content])
