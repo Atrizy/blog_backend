@@ -1,7 +1,7 @@
 import mariadb as db
 import dbinteractions as dbi
 
-## This functoin is adding a like to a blog
+## This function is adding a like to a blog
 def rate_blog(login_token, blog_id):
     success = False
     id = None
@@ -35,7 +35,7 @@ def get_blog_rating(blog_id):
     ## Connecting to the db
     conn, cursor = dbi.connect_db()
     try:
-        ## This select statement is grabbing all the blog likes and joining the the users table so that the backend can figure out what user is liking the blog
+        ## This select statement is grabbing all the blog likes and joining the the users table so that the backend can figure out what user[s] are liking the blog
         cursor.execute("SELECT users.username, blog_rating.blog_id, blog_rating.user_id FROM users INNER JOIN blog_rating ON blog_rating.user_id = users.id WHERE blog_rating.blog_id=?", [blog_id])
         ## This is fetching all the comments and inputting into the empty likes ("likes = []") array
         likes = cursor.fetchall()
@@ -53,7 +53,7 @@ def delete_blog_rating(login_token, id, blog_id):
     success = False
     conn, cursor = dbi.connect_db()
     try:
-        ## Getting the login token to figure out which user is trying to make like a blog post
+        ## Getting the login token to figure out which user is trying to delete like a blog post
         cursor.execute("SELECT user_id FROM user_session WHERE login_token=?", [login_token])
         ## This fetchone statement is getting the everything about the user
         user = cursor.fetchone()
