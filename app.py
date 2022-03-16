@@ -1,9 +1,11 @@
+import email
 import post as po
 import signup as su
 import login as log
 import comments as cm
 import comment_likes as cl
 import blog_ratings as br
+import users as use
 from flask import Flask, request, Response
 import json
 import dbinteractions as db
@@ -116,7 +118,7 @@ def delete_blog_like():
 @app.get("/api/users")
 def get_bloggers():
     try:
-        success, users = log.get_users()
+        success, users = use.get_users()
         if(success):
             users_json = json.dumps(users, default=str)
             return Response(users_json, mimetype="application/json", status=200)
@@ -125,13 +127,51 @@ def get_bloggers():
     except:
         return Response("Something went horribly wrong please call someone", mimetype="plain/text", status=500)
 
-@app.post("/api/users")
+@app.get("/api/user")
+def get_single_blogger():
+    try:
+        login_token = request.args["login_token"]
+        success, user = use.get_single_user(login_token)
+        if(success):
+            user = {
+                "username": user[0],
+                "pfp": user[1],
+                "profile_banner": user[2],
+                "dob": user[3],                
+                "bio": user[4]
+            }
+            user_json = json.dumps(user, default=str)
+            return Response(user_json, mimetype="application/json", status=200)
+        else:
+            return Response("Please try again", mimetype="plain/text", status=400)
+    except:
+        return Response("Something went horribly wrong please call someone", mimetype="plain/text", status=500)
+
+@app.post("/api/user_login")
+def login_user():
+    try: 
+        email = request.json["email"]
+        password = request.json["password"]
+        success, login_token = log.login_user(email, password)
+        if(success):
+            user_json = json.dumps({
+                "login_token": login_token
+            }, default=str)
+            return Response(user_json, mimetype="application/json", status=200)
+        else:
+            return Response("Please try again", mimetype="plain/text", status=400)
+    except:
+        return Response("Something went horribly wrong please call someone", mimetype="plain/text", status=500)
+
+
+
+@app.post("/api/user_create")
 def create_user():
     try:
         email = request.json['email']
         username = request.json['username']
         password = request.json['password']
-        bio = request.json['bio']
+        bio = request.json.get('bio')
         dob = request.json['dob']
         pfp = request.json.get('pfp')
         profile_banner = request.json.get("profile_banner")
@@ -146,7 +186,7 @@ def create_user():
                 "pfp": pfp,
                 "profile_banner": profile_banner,
                 "login_token": login_token
-            })
+            }, default=str)
             return Response(user_json, mimetype="application/json", status=200)
         else:
             return Response("Please try again", mimetype="plain/text", status=400)
