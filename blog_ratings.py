@@ -26,7 +26,7 @@ def rate_blog(login_token, blog_id):
     except:
         print("Something went wrong")
     dbi.disconnect_db(conn, cursor)
-    return success, id
+    return success, id, blog_id
 
 def get_blog_rating(blog_id):
     success = False

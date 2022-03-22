@@ -41,3 +41,21 @@ def get_single_user(login_token):
         print("Something went wrong")
     dbi.disconnect_db(conn, cursor)
     return success, user
+
+def get_user_posts(username):
+    success = False
+    posts_and_poster = []
+    ## This is what is needed to actually connect to the database
+    conn, cursor = dbi.connect_db()
+    try:
+        cursor.execute("SELECT username, pfp, blog_post.header, blog_post.blog_pic, blog_post.created_at, blog_post.id FROM users INNER JOIN blog_post ON users.id = user_id WHERE users.username=?", [username])
+        posts_and_poster = cursor.fetchall()
+        success = True
+    except db.ProgrammingError:
+        print("There is an error with the SQL")
+    except db.OperationalError:
+        print("There was an issue with the DB")
+    except:
+        print("Something went wrong")
+    dbi.disconnect_db(conn, cursor)
+    return success, posts_and_poster

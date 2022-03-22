@@ -1,4 +1,3 @@
-import email
 import post as po
 import signup as su
 import login as log
@@ -30,10 +29,23 @@ def get_blog_likes():
 @app.get("/api/post")
 def get_blog_post():
     try:
-        success, post = po.get_all_posts()
+        success, posts = po.get_all_posts()
         if(success):
-            posts_json = json.dumps(post, default=str)
+            posts_json = json.dumps(posts, default=str)
             return Response(posts_json, mimetype="application/json", status=200)
+        else:
+            return Response("Please try again", mimetype="plain/text", status=400)
+    except:
+        return Response("Sorry Please try again", mimetype="plain/text", status=500)
+
+@app.get("/api/single_post")
+def get_single_blog_post():
+    try:
+        blog_id = request.args["blog_id"]
+        success, post, blog_id = po.get_a_post(blog_id)
+        if(success):
+            post_json = json.dumps(post, default=str)
+            return Response(post_json, mimetype="application/json", status=200)
         else:
             return Response("Please try again", mimetype="plain/text", status=400)
     except:
@@ -44,11 +56,14 @@ def insert_post():
     try:
         login_token = request.json['login_token']
         content = request.json['content']
-        success, id = po.insert_post(login_token, content)
+        header = request.json['header']
+        blog_pic = request.json['blog_pic']
+        success, id = po.insert_post(login_token, content, header, blog_pic)
         if(success):
             post_json = json.dumps({
                 "login_token":login_token,
                 "content": content,
+                "blog_pic": blog_pic,
                 "id": id
             }, default=str)
             return Response(post_json, mimetype="application/json", status=201)
@@ -64,7 +79,7 @@ def like_blog():
     try:
         login_token = request.json["login_token"]
         blog_id = request.json["blog_id"]
-        success = br.rate_blog(login_token, blog_id)
+        success, id, blog_id = br.rate_blog(login_token, blog_id)
         if(success):
             return Response(mimetype="application/json", status=200)
         else:
@@ -122,6 +137,19 @@ def get_bloggers():
         if(success):
             users_json = json.dumps(users, default=str)
             return Response(users_json, mimetype="application/json", status=200)
+        else:
+            return Response("Please try again", mimetype="plain/text", status=400)
+    except:
+        return Response("Something went horribly wrong please call someone", mimetype="plain/text", status=500)
+
+@app.get("/api/users_posts")
+def get_user_blog_posts():
+    try:
+        username = request.args["username"]
+        success, posts_and_poster = use.get_user_posts(username)
+        if(success):
+            posts_and_posters_json = json.dumps(posts_and_poster, default=str)
+            return Response(posts_and_posters_json, mimetype="application/json", status=200)
         else:
             return Response("Please try again", mimetype="plain/text", status=400)
     except:
